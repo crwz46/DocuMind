@@ -10,8 +10,8 @@ from documind.api.routes import router
 
 app = FastAPI(
     title="DocuMind API",
-    version="1.0.0",
-    description="Document Q&A with RAG — Upload documents and ask questions",
+    version="2.0.0",
+    description="Document Intelligence with RAG — Q&A, Summarization, Structured Extraction, OCR, Excel Export",
 )
 
 app.add_middleware(

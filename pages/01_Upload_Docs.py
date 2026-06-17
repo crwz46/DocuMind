@@ -8,17 +8,24 @@ st.markdown("# 📄 Upload Documents")
 
 pipeline = QAPipeline()
 
-uploaded_files = st.file_uploader(
-    "Choose documents (PDF, DOCX, TXT, MD)",
-    type=["pdf", "docx", "txt", "md"],
-    accept_multiple_files=True,
-)
+col1, col2 = st.columns([3, 1])
+with col1:
+    uploaded_files = st.file_uploader(
+        "Choose documents (PDF, DOCX, TXT, MD)",
+        type=["pdf", "docx", "txt", "md"],
+        accept_multiple_files=True,
+    )
+with col2:
+    force_ocr = st.checkbox("🔍 Force OCR", value=False, help="Enable OCR for scanned PDFs (auto-detected for textless PDFs)")
+
+if force_ocr:
+    st.info("🔍 OCR mode enabled — all PDFs will be processed with optical character recognition")
 
 if uploaded_files:
     results = []
     for f in uploaded_files:
         data = f.read()
-        result = pipeline.ingest_bytes(f.name, data)
+        result = pipeline.ingest_bytes(f.name, data, force_ocr=force_ocr)
         results.append((f.name, result))
         st.session_state.setdefault("uploaded", []).append(f.name)
 

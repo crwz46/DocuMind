@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from documind.config import Config
 from documind.document_loader import Document, DocumentLoader
@@ -7,6 +7,9 @@ from documind.embeddings import EmbeddingEngine
 from documind.vector_store import VectorStore
 from documind.retriever import Retriever
 from documind.llm import LLMEngine
+from documind.extractor import Extractor
+from documind.summarizer import Summarizer
+from documind.exporter import ExcelExporter
 
 
 class QAPipeline:
@@ -16,8 +19,41 @@ class QAPipeline:
         self.retriever = Retriever(self.vector_store, top_k=5)
         self.chunker = TextChunker()
         self.llm = LLMEngine()
+        self.extractor = Extractor(llm=self.llm)
+        self.summarizer = Summarizer(llm=self.llm)
+        self.exporter = ExcelExporter()
 
-    def ingest(self, file_path: str) -> Dict:
+    def extract(self, source: str = None, schema: Dict[str, str] = None) -> List[Dict[str, Any]]:
+        if source:
+            docs = DocumentLoader.load(source)
+        else:
+            all_data = self.vector_store.list_documents()
+            if not all_data:
+                return []
+            source = all_data[0]["source"]
+            docs = DocumentLoader.load(source)
+        return self.extractor.extract(docs, schema=schema)
+
+    def extract_from_chunks(self, query: str, top_k: int = 10, schema: Dict[str, str] = None) -> List[Dict[str, Any]]:
+        results = self.retriever.retrieve(query, top_k=top_k)
+        docs = [Document(content=r["content"], metadata=r["metadata"]) for r in results]
+        return self.extractor.extract(docs, schema=schema)
+
+    def summarize(self, source: str = None, style: str = "bullet") -> str:
+        if source:
+            docs = DocumentLoader.load(source)
+        else:
+            all_data = self.vector_store.list_documents()
+            if not all_data:
+                return "No documents in knowledge base."
+            source = all_data[0]["source"]
+            docs = DocumentLoader.load(source)
+        return self.summarizer.summarize(docs, style=style)
+
+    def export_excel(self, data: List[Dict[str, Any]], output_path: str) -> str:
+        return self.exporter.export(data, output_path)
+
+    def ingest(self, file_path: str, force_ocr: bool = False) -> Dict:
         documents = DocumentLoader.load(file_path)
         if not documents or not any(d.content.strip() for d in documents):
             return {"status": "error", "message": "No extractable content found", "chunks": 0}
@@ -29,8 +65,8 @@ class QAPipeline:
             "chunks": count,
         }
 
-    def ingest_bytes(self, filename: str, data: bytes) -> Dict:
-        documents = DocumentLoader.load_bytes(filename, data)
+    def ingest_bytes(self, filename: str, data: bytes, force_ocr: bool = False) -> Dict:
+        documents = DocumentLoader.load_bytes(filename, data, force_ocr=force_ocr)
         if not documents or not any(d.content.strip() for d in documents):
             return {"status": "error", "message": "No extractable content found", "chunks": 0}
         chunks = self.chunker.chunk(documents)
