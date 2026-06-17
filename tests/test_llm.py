@@ -33,3 +33,14 @@ class TestLLMEngine:
         messages = LLMEngine._build_messages("Test question")
         assert len(messages) == 2
         assert messages[1]["content"] == "Test question"
+
+    def test_demo_json_mode(self):
+        engine = LLMEngine(provider="demo")
+        answer = engine.ask("Extract data", context="Some data", json_mode=True)
+        assert "Demo Mode" in answer
+        assert "Structured Data" in answer
+
+    def test_ask_with_json_mode(self):
+        engine = LLMEngine(provider="demo")
+        answer = engine.ask("Extract", json_mode=True)
+        assert "Demo Mode" in answer

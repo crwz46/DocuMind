@@ -58,3 +58,47 @@ class TestDocumentLoader:
         docs = DocumentLoader.load(str(fp))
         assert len(docs) == 1
         assert docs[0].content == ""
+
+    def test_is_scanned_true(self, tmp_path):
+        fp = tmp_path / "textless.pdf"
+        fp.write_bytes(b"%PDF-1.4\n%%EOF")
+        from documind.document_loader import Document
+        docs = [Document(content="", metadata={"source": str(fp), "type": "pdf"})]
+        assert DocumentLoader._is_scanned(docs)
+
+    def test_is_scanned_false(self, tmp_path):
+        from documind.document_loader import Document
+        docs = [Document(content="This is a real document with plenty of text content.", metadata={})]
+        assert not DocumentLoader._is_scanned(docs)
+
+    def test_force_ocr_flag(self, monkeypatch, tmp_path):
+        fp = tmp_path / "scan.pdf"
+        fp.write_bytes(b"%PDF-1.4\nfake content\n%%EOF")
+
+        class MockReader:
+            def readtext(self, image):
+                return [([[0, 0], [10, 0], [10, 5], [0, 5]], "OCR text", 0.95)]
+
+        monkeypatch.setattr("easyocr.Reader", lambda *a, **kw: MockReader())
+
+        class MockImg:
+            original = __import__("numpy").zeros((100, 100, 3), dtype="uint8")
+
+        class MockPage:
+            def extract_text(self):
+                return ""
+            def to_image(self, resolution=300):
+                return MockImg()
+
+        class MockPDF:
+            def __init__(self, *a, **kw):
+                self.pages = [MockPage()]
+            def __enter__(self):
+                return self
+            def __exit__(self, *a):
+                pass
+
+        monkeypatch.setattr("pdfplumber.open", lambda p: MockPDF())
+
+        docs = DocumentLoader.load(str(fp), force_ocr=True)
+        assert any("OCR text" in d.content for d in docs)

@@ -59,6 +59,7 @@ class ExcelExporter:
     @staticmethod
     def export_multi_sheet(data: Dict[str, List[Dict[str, Any]]], output_path: str) -> str:
         import openpyxl
+        from openpyxl.styles import Font
 
         wb = openpyxl.Workbook()
         wb.remove(wb.active)
