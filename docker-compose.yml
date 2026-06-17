@@ -1,0 +1,17 @@
+services:
+  documind:
+    build: .
+    ports:
+      - "8000:8000"
+      - "8501:8501"
+    volumes:
+      - chroma_data:/app/chroma_db
+    environment:
+      - LLM_PROVIDER=${LLM_PROVIDER:-demo}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+    env_file:
+      - .env
+
+volumes:
+  chroma_data:
