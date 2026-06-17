@@ -61,7 +61,7 @@ class LLMEngine:
             )
 
         context_preview = context[:500].replace("\n", " ")
-        n_chunks = context.count("[") if context.count("[") > 0 else 1
+        n_chunks = context.count("---\n") + 1
 
         return (
             f"[Demo Mode — Simulated Answer]\n\n"

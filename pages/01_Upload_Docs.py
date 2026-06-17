@@ -6,9 +6,6 @@ from documind.qa_pipeline import QAPipeline
 st.set_page_config(page_title="DocuMind — Upload", page_icon="📄", layout="wide")
 st.markdown("# 📄 Upload Documents")
 
-if "pipeline" not in st.query_params:
-    pass
-
 pipeline = QAPipeline()
 
 uploaded_files = st.file_uploader(
