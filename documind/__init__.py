@@ -10,10 +10,14 @@ from documind.ocr import OCREngine
 from documind.extractor import Extractor
 from documind.summarizer import Summarizer
 from documind.exporter import ExcelExporter
+from documind.auth import register_user, login_user, decode_jwt
+from documind.database import UserDB, ConversationDB, init_db
 
-__version__ = "2.0.0"
+__version__ = "3.0.0"
 __all__ = [
     "Config", "DocumentLoader", "TextChunker", "EmbeddingEngine",
     "VectorStore", "Retriever", "LLMEngine", "QAPipeline",
     "OCREngine", "Extractor", "Summarizer", "ExcelExporter",
+    "register_user", "login_user", "decode_jwt",
+    "UserDB", "ConversationDB", "init_db",
 ]

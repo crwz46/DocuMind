@@ -7,11 +7,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from documind.api.routes import router
+from documind.api.auth_routes import router as auth_router
 
 app = FastAPI(
     title="DocuMind API",
-    version="2.0.0",
-    description="Document Intelligence with RAG — Q&A, Summarization, Structured Extraction, OCR, Excel Export",
+    version="3.0.0",
+    description="Multi-User Document Intelligence — Auth, RAG, OCR, Extraction, Export, Chat History",
 )
 
 app.add_middleware(
@@ -22,6 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router)
 app.include_router(router)
 
 

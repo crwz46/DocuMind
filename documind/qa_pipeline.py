@@ -13,9 +13,10 @@ from documind.exporter import ExcelExporter
 
 
 class QAPipeline:
-    def __init__(self, store_path: str = None):
+    def __init__(self, store_path: str = None, user_id: int = None):
+        self.user_id = user_id
         self.embedding_engine = EmbeddingEngine()
-        self.vector_store = VectorStore(path=store_path, embedding_engine=self.embedding_engine)
+        self.vector_store = VectorStore(path=store_path, embedding_engine=self.embedding_engine, user_id=user_id)
         self.retriever = Retriever(self.vector_store, top_k=5)
         self.chunker = TextChunker()
         self.llm = LLMEngine()

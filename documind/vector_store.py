@@ -10,15 +10,17 @@ from documind.embeddings import EmbeddingEngine
 
 
 class VectorStore:
-    def __init__(self, path: str = None, embedding_engine: EmbeddingEngine = None):
+    def __init__(self, path: str = None, embedding_engine: EmbeddingEngine = None, user_id: int = None):
         self.path = path or Config.VECTOR_STORE_PATH
         self.embedding_engine = embedding_engine or EmbeddingEngine()
+        self.user_id = user_id
         self._client = chromadb.PersistentClient(
             path=self.path,
             settings=Settings(anonymized_telemetry=False),
         )
+        collection_name = f"documents_user_{user_id}" if user_id else "documents"
         self._collection = self._client.get_or_create_collection(
-            name="documents",
+            name=collection_name,
             metadata={"hnsw:space": "cosine"},
         )
 
