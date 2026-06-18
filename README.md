@@ -1,3 +1,5 @@
+[![CI](https://github.com/crwz46/DocuMind/actions/workflows/test.yml/badge.svg)](https://github.com/crwz46/DocuMind/actions/workflows/test.yml)
+
 # 🧠 DocuMind — Multi-User Document Intelligence Platform
 
 **DocuMind** is a professional **multi-user** Document Intelligence platform built on RAG (Retrieval-Augmented Generation). Upload documents, ask questions with **source citations**, chat with **conversation memory**, extract structured data, export to Excel, and more. Each user has an isolated knowledge base.
