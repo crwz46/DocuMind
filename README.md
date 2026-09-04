@@ -2,7 +2,7 @@
 
 # 🧠 DocuMind — Multi-User Document Intelligence Platform
 
-![DocuMind Interactive Web App](docs/screenshot-documind.png)
+![DocuMind Interactive Web App](Screenshot.png)
 
 **DocuMind** is a professional **multi-user** Document Intelligence platform built on RAG (Retrieval-Augmented Generation). Upload documents, ask questions with **source citations**, chat with **conversation memory**, extract structured data, export to Excel, and more. Each user has an isolated knowledge base.
 
