@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "DocuMind"
+description = "An interactive document intelligence workspace for uploading files, searching knowledge, asking questions with citations, summarizing content, and extracting structured data."
+version = "1.0.0"
+id = "artifacts/documind-web"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25684
+
+[services.development]
+run = "pnpm --filter @workspace/documind-web run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/documind-web", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/documind-web/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25684"
+BASE_PATH = "/"
